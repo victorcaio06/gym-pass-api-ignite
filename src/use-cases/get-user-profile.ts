@@ -1,7 +1,6 @@
 import { User } from '@prisma/client';
 
 import { UsersRepository } from '@/repositories/users-repository';
-import { InvalidCredentialsError } from './errors/invalid-credentials-erros';
 import { ResourceNotFoundError } from './errors/resource-not-found-error';
 
 interface GetUserProfileUseCaseRequest {
