@@ -20,8 +20,8 @@ describe('Check in Use Case', () => {
       title: 'Academia FF',
       description: 'Seu objetivo nossa meta',
       phone: '8888888888',
-      latitude: new Decimal(0),
-      longitude: new Decimal(0),
+      latitude: new Decimal(-5.1918047),
+      longitude: new Decimal(-39.2894742),
     });
 
     vi.useFakeTimers();
@@ -35,8 +35,8 @@ describe('Check in Use Case', () => {
     const { checkIn } = await sut.execute({
       gymId: 'gym-id-test',
       userId: 'user-id-test',
-      userLatitude: 0,
-      userLongitude: 0,
+      userLatitude: -5.1918047,
+      userLongitude: -39.2894742,
     });
 
     expect(checkIn.id).toEqual(expect.any(String));
@@ -48,16 +48,16 @@ describe('Check in Use Case', () => {
     await sut.execute({
       gymId: 'gym-id-test',
       userId: 'user-id-test',
-      userLatitude: 0,
-      userLongitude: 0,
+      userLatitude: -5.1918047,
+      userLongitude: -39.2894742,
     });
 
     await expect(async () => {
       await sut.execute({
         gymId: 'gym-id-test',
         userId: 'user-id-test',
-        userLatitude: 0,
-        userLongitude: 0,
+        userLatitude: -5.1918047,
+        userLongitude: -39.2894742,
       });
     }).rejects.toBeInstanceOf(Error);
   });
@@ -68,8 +68,8 @@ describe('Check in Use Case', () => {
     await sut.execute({
       gymId: 'gym-id-test',
       userId: 'user-id-test',
-      userLatitude: 0,
-      userLongitude: 0,
+      userLatitude: -5.1918047,
+      userLongitude: -39.2894742,
     });
 
     vi.setSystemTime(new Date(2022, 0, 21, 8, 0, 0));
@@ -77,10 +77,30 @@ describe('Check in Use Case', () => {
     const { checkIn } = await sut.execute({
       gymId: 'gym-id-test',
       userId: 'user-id-test',
-      userLatitude: 0,
-      userLongitude: 0,
+      userLatitude: -5.1918047,
+      userLongitude: -39.2894742,
     });
 
     expect(checkIn.id).toEqual(expect.any(String));
+  });
+
+  it('should not be able to check in on distant gym', async () => {
+    gymsRepository.gyms.push({
+      id: 'gym-id-test-2',
+      title: 'Academia FF',
+      description: 'Seu objetivo nossa meta',
+      phone: '8888888888',
+      latitude: new Decimal(-5.1644082),
+      longitude: new Decimal(-39.2775438),
+    });
+
+    await expect(async () => {
+      await sut.execute({
+        gymId: 'gym-id-test-2',
+        userId: 'user-id-test',
+        userLatitude: -5.1918047,
+        userLongitude: -39.2894742,
+      });
+    }).rejects.toBeInstanceOf(Error);
   });
 });
