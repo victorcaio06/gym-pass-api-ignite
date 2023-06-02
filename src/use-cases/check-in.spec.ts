@@ -1,27 +1,29 @@
+import { Decimal } from '@prisma/client/runtime/library';
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest';
 
-import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository';
 import { CheckInUseCase } from './check-in';
+import { MaxDistanceError } from './errors/max-distance-error';
+import { MaxNumberOfCheckInsError } from './errors/max-of-number-check-ins-error';
 import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository';
-import { Decimal } from '@prisma/client/runtime/library';
+import { InMemoryCheckInsRepository } from '@/repositories/in-memory/in-memory-check-ins-repository';
 
 let checkInsRepository: InMemoryCheckInsRepository;
 let gymsRepository: InMemoryGymsRepository;
 let sut: CheckInUseCase;
 
 describe('Check in Use Case', () => {
-  beforeEach(() => {
+  beforeEach(async () => {
     checkInsRepository = new InMemoryCheckInsRepository();
     gymsRepository = new InMemoryGymsRepository();
     sut = new CheckInUseCase(checkInsRepository, gymsRepository);
 
-    gymsRepository.gyms.push({
+    await gymsRepository.create({
       id: 'gym-id-test',
       title: 'Academia FF',
       description: 'Seu objetivo nossa meta',
       phone: '8888888888',
-      latitude: new Decimal(-5.1918047),
-      longitude: new Decimal(-39.2894742),
+      latitude: -5.1918047,
+      longitude: -39.2894742,
     });
 
     vi.useFakeTimers();
@@ -59,7 +61,7 @@ describe('Check in Use Case', () => {
         userLatitude: -5.1918047,
         userLongitude: -39.2894742,
       });
-    }).rejects.toBeInstanceOf(Error);
+    }).rejects.toBeInstanceOf(MaxNumberOfCheckInsError);
   });
 
   it('should be able to check in twice but in different days', async () => {
@@ -101,6 +103,6 @@ describe('Check in Use Case', () => {
         userLatitude: -5.1918047,
         userLongitude: -39.2894742,
       });
-    }).rejects.toBeInstanceOf(Error);
+    }).rejects.toBeInstanceOf(MaxDistanceError);
   });
 });
