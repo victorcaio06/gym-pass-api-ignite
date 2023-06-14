@@ -26,8 +26,6 @@ export default <Environment>{
 
     process.env.DATABASE_URL = databaseURL;
 
-    console.log(generateDatabaseURL(schema));
-
     execSync('npx prisma migrate deploy');
 
     return {
