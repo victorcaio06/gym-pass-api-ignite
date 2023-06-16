@@ -1,7 +1,5 @@
 import { beforeEach, describe, expect, it } from 'vitest';
 
-import { InMemoryUsersRepository } from '@/repositories/in-memory/in-memory-users-repository';
-import { RegisterUseCase } from '@/use-cases/register';
 import { InMemoryGymsRepository } from '@/repositories/in-memory/in-memory-gyms-repository';
 import { CreateGymUseCase } from './create-gym';
 
