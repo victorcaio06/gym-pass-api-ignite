@@ -31,8 +31,6 @@ export class CreateGymUseCase {
       longitude,
     });
 
-
-
     return { gym };
   }
 }
