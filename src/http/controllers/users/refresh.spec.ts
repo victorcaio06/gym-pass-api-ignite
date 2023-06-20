@@ -2,7 +2,7 @@ import { afterAll, beforeAll, describe, expect, it } from 'vitest';
 import request from 'supertest';
 import { app } from '@/app';
 
-describe('Authenticate (e2e)', () => {
+describe('Refresh (e2e)', () => {
   beforeAll(async () => {
     await app.ready();
   });
@@ -11,19 +11,17 @@ describe('Authenticate (e2e)', () => {
     await app.close();
   });
 
-  it('should be able to authenticate', async () => {
+  it('should be able to refresh token', async () => {
     await request(app.server).post('/users').send({
       name: 'John',
       email: 'johnDoe@example.com',
       password: '123456',
     });
 
-    const authResponse = await request(app.server)
-      .patch('/token/refresh')
-      .send({
-        email: 'johnDoe@example.com',
-        password: '123456',
-      });
+    const authResponse=  await request(app.server).post('/sessions').send({
+      email: 'johnDoe@example.com',
+      password: '123456',
+    });
 
     const cookies = authResponse.get('Set-Cookie');
 
@@ -33,9 +31,9 @@ describe('Authenticate (e2e)', () => {
       .send();
 
     expect(response.statusCode).toEqual(200);
-    expect(response.body).toEqual({ refreshToken: expect.any(String) });
+    expect(response.body).toEqual({ token: expect.any(String) });
     expect(response.get('Set-Cookie')).toEqual([
-      expect.stringContaining('refreshToken=')
-    ])
+      expect.stringContaining('refreshToken='),
+    ]);
   });
 });
